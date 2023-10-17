@@ -1,6 +1,8 @@
 # Imaginary
 On the fly image web convert API
 
+**Early development stage !!!**
+
 ## Environment variables
 
 | **Variable** | **Default**    | **What is it**                       |

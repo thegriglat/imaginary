@@ -15,9 +15,11 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
 
     match image {
         Ok(_) => {
-            let i = image.unwrap();
-            println!("bytes: {}", i.len());
-            HttpResponse::Ok().content_type("image/jpeg").body(i)
+            let image_bytes = image.unwrap();
+            println!("bytes: {}", image_bytes.len());
+            HttpResponse::Ok()
+                .content_type("image/jpeg")
+                .body(image_bytes)
         }
         Err(_) => HttpResponse::NotFound().body("404 Not Found"),
     }
