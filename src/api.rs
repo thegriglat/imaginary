@@ -1,4 +1,8 @@
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{
+    get,
+    web::{self, Bytes},
+    HttpResponse, Responder,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::request;
@@ -14,13 +18,16 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
     let image = request::request(&query.url).await;
 
     match image {
-        Ok(_) => {
-            let image_bytes = image.unwrap();
-            println!("bytes: {}", image_bytes.len());
-            HttpResponse::Ok()
+        Ok(_) => match image {
+            Ok(image_bytes) => HttpResponse::Ok()
                 .content_type("image/jpeg")
-                .body(image_bytes)
-        }
+                .body(convert_image(&image_bytes)),
+            Err(_) => HttpResponse::NotFound().body("404 Not Found"),
+        },
         Err(_) => HttpResponse::NotFound().body("404 Not Found"),
     }
+}
+
+fn convert_image(bytes: &Bytes) -> Bytes {
+    bytes.clone()
 }
