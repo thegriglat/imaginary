@@ -3,8 +3,10 @@ On the fly image web convert API
 
 ## Environment variables
 
-`PORT`: which port Imaginary will listen (default: 8080)
-`WORKERS`: how many worker threads will be used (default: number of available CPUs)
+| **Variable** | **Default**    | **What is it**                       |
+| :----------- | :------------- | :----------------------------------- |
+| `PORT`       | 8080           | Which port Imaginary will listen     |
+| `WORKERS`    | number of CPUs | How many worker threads will be used |
 
 
 ### Local development
