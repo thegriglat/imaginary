@@ -5,6 +5,7 @@ use actix_web::{middleware::Logger, App, HttpServer};
 mod config;
 use config::Config;
 mod api;
+mod request;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = Config::read();

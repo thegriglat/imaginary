@@ -1,16 +1,24 @@
 use actix_web::{get, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
+use crate::request;
+
 #[derive(Deserialize, Serialize)]
 pub struct QueryParams {
-    q: Option<String>,
+    url: String,
+    flip_x: Option<bool>,
 }
 
 #[get("/")]
 pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
-    let q = match query.q {
-        Some(ref q) => q,
-        None => "World",
-    };
-    HttpResponse::Ok().body(format!("Hello {}!", q))
+    let image = request::request(&query.url).await;
+
+    match image {
+        Ok(_) => {
+            let i = image.unwrap();
+            println!("bytes: {}", i.len());
+            HttpResponse::Ok().content_type("image/jpeg").body(i)
+        }
+        Err(_) => HttpResponse::NotFound().body("404 Not Found"),
+    }
 }
