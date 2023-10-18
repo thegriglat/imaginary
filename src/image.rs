@@ -37,6 +37,17 @@ impl Converter {
         self
     }
 
+    fn blur(&mut self, blur: Option<f32>) -> &mut Self {
+        match blur {
+            Some(value) => {
+                println!("blur: {}", value);
+                self.image = self.image.blur(value);
+            }
+            _ => {}
+        }
+        self
+    }
+
     fn bytes(&self) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
         match self.image.write_to(
@@ -51,6 +62,9 @@ impl Converter {
 
     pub fn result(&mut self) -> Result<Bytes, String> {
         let params = self.params.clone();
-        self.flip_x(params.flip_x).flip_y(params.flip_y).bytes()
+        self.flip_x(params.flip_x)
+            .flip_y(params.flip_y)
+            .blur(params.blur)
+            .bytes()
     }
 }

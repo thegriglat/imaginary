@@ -14,9 +14,10 @@ On the fly image web convert API
 
 | **Variable** | **Required?** | **Allowed values** | **Description**           |
 | :----------- | :------------ | :----------------- | :------------------------ |
-| `url`        | yes           | valid url          | image url to be processed |
+| `url`        | yes           | valid url          | Image url to be processed |
 | `flip_x`     | no            | true/false         | Flip image horizontally   |
 | `flip_y`     | no            | true/false         | Flip image vertically     |
+| `blur`       | no            | floating number    | Blur image                |
 
 ### Local development
 ```bash
