@@ -17,14 +17,6 @@ impl Converter {
         }
     }
 
-    pub fn guess_format(bytes: &Bytes) -> &str {
-        match image::guess_format(bytes) {
-            Ok(image::ImageFormat::Jpeg) => "image/jpeg",
-            Ok(image::ImageFormat::Png) => "image/png",
-            _ => "image/jpeg",
-        }
-    }
-
     fn flip_x(&mut self, flip: Option<bool>) -> &mut Self {
         match flip {
             Some(true) => {
@@ -48,7 +40,6 @@ impl Converter {
     fn blur(&mut self, blur: Option<f32>) -> &mut Self {
         match blur {
             Some(value) => {
-                println!("blur: {}", value);
                 self.image = self.image.blur(value);
             }
             _ => {}
@@ -128,12 +119,19 @@ impl Converter {
 
     pub fn result(&mut self) -> Result<Bytes, String> {
         let params = self.params.clone();
-        self.flip_x(params.flip_x)
+        self.crop(params.crop)
+            .flip_x(params.flip_x)
             .flip_y(params.flip_y)
-            .blur(params.blur)
-            .crop(params.crop)
-            .grayscale(params.grayscale)
             .rotate(params.rotate)
+            .grayscale(params.grayscale)
+            .blur(params.blur)
             .bytes(params.format)
+    }
+}
+
+pub fn guess_format(bytes: &Bytes) -> Result<&str, &str> {
+    match image::guess_format(bytes) {
+        Ok(value) => Ok(value.to_mime_type()),
+        _ => Err("Unsupported format"),
     }
 }
