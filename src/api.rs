@@ -1,6 +1,6 @@
 use actix_web::{
     get,
-    web::{self, Bytes},
+    web::{self},
     HttpResponse, Responder,
 };
 use serde::{Deserialize, Serialize};
@@ -24,16 +24,17 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
         Err(_) => return HttpResponse::NotFound().body("404 Not Found"),
     };
 
-    let converted_image = match convert_image(&image_bytes, query_params) {
-        Ok(converted_image) => converted_image,
+    let mut converter = match Converter::new(&image_bytes, query_params) {
+        Ok(converter) => converter,
+        Err(_) => return HttpResponse::InternalServerError().body("500 Cannot read image"),
+    };
+
+    let converted_image = match converter.result() {
+        Ok(image) => image,
         Err(_) => return HttpResponse::InternalServerError().body("500 Cannot convert image"),
     };
 
     HttpResponse::Ok()
         .content_type("image/jpeg")
         .body(converted_image)
-}
-
-fn convert_image(bytes: &Bytes, params: QueryParams) -> Result<Bytes, String> {
-    Converter::new(bytes, params).and_then(|mut converter| converter.result())
 }
