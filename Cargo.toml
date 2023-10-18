@@ -2,6 +2,12 @@
 name = "imaginary"
 version = "0.1.0"
 edition = "2021"
+authors = ["Grigory Latyshev"]
+description = "A Rust HTTP server that converts images on the fly"
+repository = "https://github.com/thegriglat/imaginary"
+homepage = "https://github.com/thegriglat/imaginary"
+license = "MIT"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
