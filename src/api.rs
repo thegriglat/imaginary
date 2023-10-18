@@ -15,6 +15,7 @@ pub struct QueryParams {
     pub grayscale: Option<bool>,
     pub blur: Option<f32>,
     pub crop: Option<String>,
+    pub rotate: Option<u32>,
 }
 
 #[get("/")]

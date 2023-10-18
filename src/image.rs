@@ -74,6 +74,22 @@ impl Converter {
         self
     }
 
+    fn rotate(&mut self, rotate: Option<u32>) -> &mut Self {
+        match rotate {
+            Some(90) => {
+                self.image = self.image.rotate90();
+            }
+            Some(180) => {
+                self.image = self.image.rotate180();
+            }
+            Some(270) => {
+                self.image = self.image.rotate270();
+            }
+            _ => {}
+        }
+        self
+    }
+
     fn bytes(&self) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
         match self.image.write_to(
@@ -93,6 +109,7 @@ impl Converter {
             .blur(params.blur)
             .crop(params.crop)
             .grayscale(params.grayscale)
+            .rotate(params.rotate)
             .bytes()
     }
 }
