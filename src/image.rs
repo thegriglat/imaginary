@@ -2,40 +2,55 @@ use std::io::Cursor;
 
 use actix_web::web::Bytes;
 
+use crate::api::QueryParams;
+
 pub struct Converter {
     image: image::DynamicImage,
+    params: QueryParams,
 }
 
 impl Converter {
-    pub fn new(bytes: &Bytes) -> Result<Self, &str> {
+    pub fn new(bytes: &Bytes, params: QueryParams) -> Result<Self, String> {
         match image::load_from_memory(bytes) {
-            Ok(image) => {
-                println!("Image loaded");
-                println!("HxW: {}x{}", image.height(), image.width());
-                Ok(Self { image })
-            }
-            Err(_) => {
-                println!("Error: Failed to load image");
-                Err("Failed to load image")
-            }
+            Ok(image) => Ok(Self { image, params }),
+            Err(_) => Err(String::from("Failed to load image")),
         }
     }
 
-    pub fn flip_x(&mut self) -> &Self {
-        self.image = self.image.flipv();
-        println!("HxW: {}x{}", self.image.height(), self.image.width());
+    fn flip_x(&mut self, flip: Option<bool>) -> &mut Self {
+        match flip {
+            Some(true) => {
+                self.image = self.image.fliph();
+            }
+            _ => {}
+        }
         self
     }
 
-    pub fn bytes(&self) -> Bytes {
+    fn flip_y(&mut self, flip: Option<bool>) -> &mut Self {
+        match flip {
+            Some(true) => {
+                self.image = self.image.flipv();
+            }
+            _ => {}
+        }
+        self
+    }
+
+    fn bytes(&self) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
         match self.image.write_to(
             &mut Cursor::new(&mut bytes),
             image::ImageOutputFormat::Jpeg(90),
         ) {
-            Ok(_) => println!("Image converted"),
-            Err(_) => println!("Error: Failed to convert image"),
+            Ok(_) => {}
+            Err(_) => return Err(String::from("Error: Failed to convert image")),
         }
-        bytes.into()
+        Ok(bytes.into())
+    }
+
+    pub fn result(&mut self) -> Result<Bytes, String> {
+        let params = self.params.clone();
+        self.flip_x(params.flip_x).flip_y(params.flip_y).bytes()
     }
 }
