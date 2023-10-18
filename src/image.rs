@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use actix_web::web::Bytes;
 
-use crate::api::{Format, QueryParams};
+use crate::query::{Format, QueryParams};
 
 pub struct Converter {
     image: image::DynamicImage,
