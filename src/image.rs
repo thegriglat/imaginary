@@ -64,6 +64,16 @@ impl Converter {
         self
     }
 
+    fn grayscale(&mut self, grayscale: Option<bool>) -> &mut Self {
+        match grayscale {
+            Some(true) => {
+                self.image = self.image.grayscale();
+            }
+            _ => {}
+        }
+        self
+    }
+
     fn bytes(&self) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
         match self.image.write_to(
@@ -82,6 +92,7 @@ impl Converter {
             .flip_y(params.flip_y)
             .blur(params.blur)
             .crop(params.crop)
+            .grayscale(params.grayscale)
             .bytes()
     }
 }

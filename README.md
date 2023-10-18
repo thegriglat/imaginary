@@ -17,6 +17,7 @@ On the fly image web convert API
 | `url`        | yes           | valid url          | Image url to be processed                                  |
 | `flip_x`     | no            | `true` or `false`  | Flip image horizontally                                    |
 | `flip_y`     | no            | `true` or `false`  | Flip image vertically                                      |
+| `grayscale`  | no            | `true` or `false`  | Make image grayscale                                       |
 | `blur`       | no            | floating number    | Blur image                                                 |
 | `crop`       | no            | `x,y,width,height` | Crop image, *x*, *y* are coordinates of top left crop edge |
 
