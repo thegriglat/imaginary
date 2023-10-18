@@ -12,12 +12,13 @@ On the fly image web convert API
 
 ## Query parameters
 
-| **Variable** | **Required?** | **Allowed values** | **Description**           |
-| :----------- | :------------ | :----------------- | :------------------------ |
-| `url`        | yes           | valid url          | Image url to be processed |
-| `flip_x`     | no            | true/false         | Flip image horizontally   |
-| `flip_y`     | no            | true/false         | Flip image vertically     |
-| `blur`       | no            | floating number    | Blur image                |
+| **Variable** | **Required?** | **Allowed values** | **Description**                                            |
+| :----------- | :------------ | :----------------- | :--------------------------------------------------------- |
+| `url`        | yes           | valid url          | Image url to be processed                                  |
+| `flip_x`     | no            | `true` or `false`  | Flip image horizontally                                    |
+| `flip_y`     | no            | `true` or `false`  | Flip image vertically                                      |
+| `blur`       | no            | floating number    | Blur image                                                 |
+| `crop`       | no            | `x,y,width,height` | Crop image, *x*, *y* are coordinates of top left crop edge |
 
 ### Local development
 ```bash

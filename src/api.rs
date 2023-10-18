@@ -13,6 +13,7 @@ pub struct QueryParams {
     pub flip_x: Option<bool>,
     pub flip_y: Option<bool>,
     pub blur: Option<f32>,
+    pub crop: Option<String>,
 }
 
 #[get("/")]

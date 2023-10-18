@@ -48,6 +48,22 @@ impl Converter {
         self
     }
 
+    fn crop(&mut self, crop: Option<String>) -> &mut Self {
+        match crop {
+            Some(value) => {
+                println!("crop: {}", value);
+                let mut parts = value.split(',');
+                let x = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+                let y = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+                let width = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+                let height = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+                self.image = self.image.crop_imm(x, y, width, height);
+            }
+            _ => {}
+        }
+        self
+    }
+
     fn bytes(&self) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
         match self.image.write_to(
@@ -65,6 +81,7 @@ impl Converter {
         self.flip_x(params.flip_x)
             .flip_y(params.flip_y)
             .blur(params.blur)
+            .crop(params.crop)
             .bytes()
     }
 }
