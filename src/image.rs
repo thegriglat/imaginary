@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use actix_web::web::Bytes;
 
-use crate::api::QueryParams;
+use crate::api::{Format, QueryParams};
 
 pub struct Converter {
     image: image::DynamicImage,
@@ -14,6 +14,14 @@ impl Converter {
         match image::load_from_memory(bytes) {
             Ok(image) => Ok(Self { image, params }),
             Err(_) => Err(String::from("Failed to load image")),
+        }
+    }
+
+    pub fn guess_format(bytes: &Bytes) -> &str {
+        match image::guess_format(bytes) {
+            Ok(image::ImageFormat::Jpeg) => "image/jpeg",
+            Ok(image::ImageFormat::Png) => "image/png",
+            _ => "image/jpeg",
         }
     }
 
@@ -90,14 +98,30 @@ impl Converter {
         self
     }
 
-    fn bytes(&self) -> Result<Bytes, String> {
+    fn bytes(&self, format: Option<Format>) -> Result<Bytes, String> {
         let mut bytes: Vec<u8> = Vec::new();
-        match self.image.write_to(
-            &mut Cursor::new(&mut bytes),
-            image::ImageOutputFormat::Jpeg(90),
-        ) {
-            Ok(_) => {}
-            Err(_) => return Err(String::from("Error: Failed to convert image")),
+        match format {
+            Some(value) => match value {
+                Format::JPEG(quality) => {
+                    match self.image.write_to(
+                        &mut Cursor::new(&mut bytes),
+                        image::ImageOutputFormat::Jpeg(quality),
+                    ) {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    }
+                }
+                Format::PNG => {
+                    match self
+                        .image
+                        .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)
+                    {
+                        Ok(_) => {}
+                        Err(_) => {}
+                    }
+                }
+            },
+            _ => {}
         }
         Ok(bytes.into())
     }
@@ -110,6 +134,6 @@ impl Converter {
             .crop(params.crop)
             .grayscale(params.grayscale)
             .rotate(params.rotate)
-            .bytes()
+            .bytes(params.format)
     }
 }
