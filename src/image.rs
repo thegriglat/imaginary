@@ -112,7 +112,15 @@ impl Converter {
                     }
                 }
             },
-            _ => {}
+            _ => {
+                match self.image.write_to(
+                    &mut Cursor::new(&mut bytes),
+                    image::ImageOutputFormat::Jpeg(95),
+                ) {
+                    Ok(_) => {}
+                    Err(_) => {}
+                }
+            }
         }
         Ok(bytes.into())
     }
@@ -129,7 +137,7 @@ impl Converter {
     }
 }
 
-pub fn guess_format(bytes: &Bytes) -> Result<&str, &str> {
+pub fn guess_mime_type(bytes: &Bytes) -> Result<&str, &str> {
     match image::guess_format(bytes) {
         Ok(value) => Ok(value.to_mime_type()),
         _ => Err("Unsupported format"),

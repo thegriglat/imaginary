@@ -5,7 +5,7 @@ use actix_web::{
 };
 
 use crate::{
-    image::{guess_format, Converter},
+    image::{guess_mime_type, Converter},
     query::{Format, QueryParams},
     request,
 };
@@ -27,7 +27,7 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
     let content_type = match query_params.format {
         Some(Format::JPEG(_)) => "image/jpeg",
         Some(Format::PNG) => "image/png",
-        None => match guess_format(&image_bytes) {
+        None => match guess_mime_type(&image_bytes) {
             Ok(value) => value,
             Err(_) => return HttpResponse::BadRequest().body("400 Cannot guess format"),
         },
@@ -38,7 +38,7 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
         Err(_) => return HttpResponse::InternalServerError().body("500 Cannot convert image"),
     };
 
-    println!("type: {:?}", content_type);
+    println!("type: {}", content_type);
     HttpResponse::Ok()
         .content_type(content_type)
         .body(converted_image)
