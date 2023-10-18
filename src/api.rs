@@ -5,7 +5,7 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::request;
+use crate::{image::Converter, request};
 
 #[derive(Deserialize, Serialize)]
 pub struct QueryParams {
@@ -29,5 +29,5 @@ pub async fn handle_image(query: web::Query<QueryParams>) -> impl Responder {
 }
 
 fn convert_image(bytes: &Bytes) -> Bytes {
-    bytes.clone()
+    Converter::new(bytes).unwrap().flip_x().bytes()
 }

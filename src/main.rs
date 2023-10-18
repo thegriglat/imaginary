@@ -6,6 +6,9 @@ mod config;
 use config::Config;
 mod api;
 mod request;
+mod image;
+
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = Config::read();
