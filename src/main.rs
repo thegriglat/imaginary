@@ -13,12 +13,7 @@ mod request;
 async fn main() -> std::io::Result<()> {
     let config = Config::read();
 
-    // logger
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-
-    // db pool app data
-
-    // server
 
     HttpServer::new(move || {
         App::new()
