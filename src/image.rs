@@ -11,62 +11,46 @@ impl Converter {
     pub fn new(bytes: &[u8], params: QueryParams) -> Result<Self, String> {
         match image::load_from_memory(bytes) {
             Ok(image) => Ok(Self { image, params }),
-            Err(err) => Err(String::from(format!("Failed to load image: {}", err))),
+            Err(err) => Err(format!("Failed to load image: {}", err)),
         }
     }
 
     fn flip_x(&mut self, flip: Option<bool>) -> &mut Self {
-        match flip {
-            Some(true) => {
-                self.image = self.image.fliph();
-            }
-            _ => {}
+        if let Some(true) = flip {
+            self.image = self.image.fliph();
         }
         self
     }
 
     fn flip_y(&mut self, flip: Option<bool>) -> &mut Self {
-        match flip {
-            Some(true) => {
-                self.image = self.image.flipv();
-            }
-            _ => {}
+        if let Some(true) = flip {
+            self.image = self.image.flipv();
         }
         self
     }
 
     fn blur(&mut self, blur: Option<f32>) -> &mut Self {
-        match blur {
-            Some(value) => {
-                self.image = self.image.blur(value);
-            }
-            _ => {}
+        if let Some(value) = blur {
+            self.image = self.image.blur(value);
         }
         self
     }
 
     fn crop(&mut self, crop: Option<String>) -> &mut Self {
-        match crop {
-            Some(value) => {
-                println!("crop: {}", value);
-                let mut parts = value.split(',');
-                let x = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
-                let y = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
-                let width = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
-                let height = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
-                self.image = self.image.crop_imm(x, y, width, height);
-            }
-            _ => {}
+        if let Some(value) = crop {
+            let mut parts = value.split(',');
+            let x = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+            let y = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+            let width = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+            let height = parts.next().unwrap_or("0").parse::<u32>().unwrap_or(0);
+            self.image = self.image.crop_imm(x, y, width, height);
         }
         self
     }
 
     fn grayscale(&mut self, grayscale: Option<bool>) -> &mut Self {
-        match grayscale {
-            Some(true) => {
-                self.image = self.image.grayscale();
-            }
-            _ => {}
+        if let Some(true) = grayscale {
+            self.image = self.image.grayscale();
         }
         self
     }
@@ -91,33 +75,33 @@ impl Converter {
         let mut bytes: Vec<u8> = Vec::new();
         match format {
             Some(value) => match value {
-                Format::JPEG(quality) => {
-                    match self.image.write_to(
-                        &mut Cursor::new(&mut bytes),
-                        image::ImageOutputFormat::Jpeg(quality),
-                    ) {
-                        Ok(_) => {}
-                        Err(_) => {}
-                    }
+                Format::Jpeg(quality) => {
+                    if self
+                        .image
+                        .write_to(
+                            &mut Cursor::new(&mut bytes),
+                            image::ImageOutputFormat::Jpeg(quality),
+                        )
+                        .is_ok()
+                    {}
                 }
-                Format::PNG => {
-                    match self
+                Format::Png => {
+                    if self
                         .image
                         .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)
-                    {
-                        Ok(_) => {}
-                        Err(_) => {}
-                    }
+                        .is_ok()
+                    {}
                 }
             },
             _ => {
-                match self.image.write_to(
-                    &mut Cursor::new(&mut bytes),
-                    image::ImageOutputFormat::Jpeg(95),
-                ) {
-                    Ok(_) => {}
-                    Err(_) => {}
-                }
+                if self
+                    .image
+                    .write_to(
+                        &mut Cursor::new(&mut bytes),
+                        image::ImageOutputFormat::Jpeg(95),
+                    )
+                    .is_ok()
+                {}
             }
         }
         Ok(bytes.into())

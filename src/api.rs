@@ -25,8 +25,8 @@ pub async fn handle_image(query: Query<QueryParams>) -> impl IntoResponse {
     };
 
     let content_type = match query_params.format {
-        Some(Format::JPEG(_)) => "image/jpeg",
-        Some(Format::PNG) => "image/png",
+        Some(Format::Jpeg(_)) => "image/jpeg",
+        Some(Format::Png) => "image/png",
         None => match guess_mime_type(&image_bytes) {
             Ok(value) => value,
             Err(_) => return (StatusCode::BAD_REQUEST, "400 Cannot guess format").into_response(),

@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Clone, Debug)]
 pub enum Format {
-    JPEG(u8),
-    PNG,
+    Jpeg(u8),
+    Png,
 }
 
 impl<'de> Deserialize<'de> for Format {
@@ -15,25 +15,23 @@ impl<'de> Deserialize<'de> for Format {
         let s = String::deserialize(deserializer)?;
         let str = s.as_str();
         if str == "png" {
-            return Ok(Format::PNG);
+            return Ok(Format::Png);
         }
 
         if str == "jpeg" {
-            return Ok(Format::JPEG(95));
+            return Ok(Format::Jpeg(95));
         }
 
         let regex = Regex::new(r"jpeg:(\d+)").unwrap();
-        match regex.captures(str) {
-            Some(caps) => {
-                let quality: u8 = caps.get(1).unwrap().as_str().parse().unwrap_or(95).min(100);
-                return Ok(Format::JPEG(quality));
-            }
-            None => {}
+
+        if let Some(caps) = regex.captures(str) {
+            let quality: u8 = caps.get(1).unwrap().as_str().parse().unwrap_or(95).min(100);
+            return Ok(Format::Jpeg(quality));
         }
 
-        return Err(serde::de::Error::custom(
+        Err(serde::de::Error::custom(
             "expected png or jpeg:<quality> as format",
-        ));
+        ))
     }
 }
 
