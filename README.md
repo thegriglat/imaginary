@@ -25,15 +25,15 @@ In common image convert adds 70-200ms to request processing time.
 ### Using Docker Hub image
 
 ```bash
-# with default port and workers
+# with default port
 docker run -p 8080:8080 thegriglat/imaginary:latest
 ```
 
 or
 
 ```bash
-# with custom port and workers
-docker run -p 8081:8081 -e PORT=8081 -e WORKERS=4 thegriglat/imaginary:latest
+# with custom port
+docker run -p 8081:8081 -e PORT=8081 thegriglat/imaginary:latest
 ```
 
 then open in browser [http://localhost:8080/?url=https://upload.wikimedia.org/wikipedia/commons/b/b2/JPEG_compression_Example.jpg&blur=2&rotate=90](http://localhost:8080/?url=https://upload.wikimedia.org/wikipedia/commons/b/b2/JPEG_compression_Example.jpg&blur=2&rotate=90) (change port if needed)
