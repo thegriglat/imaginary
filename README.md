@@ -46,10 +46,9 @@ make build
 
 ## Environment variables
 
-| **Variable** | **Default**    | **Description**                      |
-| :----------- | :------------- | :----------------------------------- |
-| `PORT`       | 8080           | Which port Imaginary will listen     |
-| `WORKERS`    | number of CPUs | How many worker threads will be used |
+| **Variable** | **Default** | **Description**                  |
+| :----------- | :---------- | :------------------------------- |
+| `PORT`       | 8080        | Which port Imaginary will listen |
 
 
 ## Local development

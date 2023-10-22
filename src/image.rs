@@ -1,8 +1,6 @@
-use std::io::Cursor;
-
-use actix_web::web::Bytes;
-
 use crate::query::{Format, QueryParams};
+use axum::body::Bytes;
+use std::io::Cursor;
 
 pub struct Converter {
     image: image::DynamicImage,
@@ -10,10 +8,10 @@ pub struct Converter {
 }
 
 impl Converter {
-    pub fn new(bytes: &Bytes, params: QueryParams) -> Result<Self, String> {
+    pub fn new(bytes: &[u8], params: QueryParams) -> Result<Self, String> {
         match image::load_from_memory(bytes) {
             Ok(image) => Ok(Self { image, params }),
-            Err(_) => Err(String::from("Failed to load image")),
+            Err(err) => Err(String::from(format!("Failed to load image: {}", err))),
         }
     }
 

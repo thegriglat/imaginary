@@ -1,6 +1,5 @@
-use std::net::Ipv4Addr;
-
-use actix_web::{middleware::Logger, App, HttpServer};
+use axum::{routing::get, Router};
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
 mod config;
 use config::Config;
@@ -9,20 +8,20 @@ mod image;
 mod query;
 mod request;
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+#[tokio::main]
+async fn main() {
     let config = Config::read();
 
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
 
-    HttpServer::new(move || {
-        App::new()
-            .service(api::handle_image)
-            .wrap(Logger::default())
-    })
-    .bind((Ipv4Addr::UNSPECIFIED, config.port))
-    .unwrap()
-    .workers(config.workers)
-    .run()
-    .await
+    let router = Router::new().route("/", get(api::handle_image));
+
+    let addr: SocketAddr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, config.port));
+
+    axum::Server::bind(&addr)
+        .serve(router.into_make_service())
+        .await
+        .unwrap();
 }
