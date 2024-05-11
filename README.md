@@ -8,15 +8,15 @@ In common image convert adds 70-200ms to request processing time.
 
 ## Query parameters
 
-| **Variable**     | **Allowed values**          | **Description**                                                                                  |
-| :--------------- | :-------------------------- | :----------------------------------------------------------------------------------------------- |
-| `url` (required) | valid url                   | Image url to be processed                                                                        |
-| `flip_x`         | `true` or `false`           | Flip image horizontally                                                                          |
-| `flip_y`         | `true` or `false`           | Flip image vertically                                                                            |
-| `grayscale`      | `true` or `false`           | Make image grayscale                                                                             |
-| `blur`           | floating number > 0         | Blur image                                                                                       |
-| `crop`           | `x,y,width,height`          | Crop image, *x*, *y* are coordinates of top left crop edge                                       |
-| `rotate`         | `90` or `180`or `270`       | Rotate image                                                                                     |
+| **Variable**     | **Allowed values**                       | **Description**                                                                                  |
+| :--------------- | :--------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| `url` (required) | valid url                                | Image url to be processed                                                                        |
+| `flip_x`         | `true` or `false`                        | Flip image horizontally                                                                          |
+| `flip_y`         | `true` or `false`                        | Flip image vertically                                                                            |
+| `grayscale`      | `true` or `false`                        | Make image grayscale                                                                             |
+| `blur`           | floating number > 0                      | Blur image                                                                                       |
+| `crop`           | `x,y,width,height`                       | Crop image, *x*, *y* are coordinates of top left crop edge                                       |
+| `rotate`         | `90` or `180`or `270`                    | Rotate image                                                                                     |
 | `format`         | `png`, `webp`, `avif` or `jpeg`/`jpeg:n` | Convert image to desired format. Configure JPEG quality with *n*, default is *JPEG (quality 95)* |
 
 
@@ -51,10 +51,11 @@ make build
 
 ## Environment variables
 
-| **Variable** | **Default** | **Description**                      |
-| :----------- | :---------- | :----------------------------------- |
-| `PORT`       | 8080        | Which port Imaginary will listen     |
-| `REDIS_URL`  | -           | Address of redis instance to connect |
+| **Variable**   | **Default** | **Description**                      |
+| :------------- | :---------- | :----------------------------------- |
+| `PORT`         | 8080        | Which port Imaginary will listen     |
+| `REDIS_URL`    | -           | Address of redis instance to connect |
+| `REDIS_PREFIX` | imaginary   | redis prefix for imaginary entries   |
 
 
 ## Local development

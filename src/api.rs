@@ -1,3 +1,5 @@
+use std::env;
+
 use anyhow::Result;
 use axum::{
     body::Bytes,
@@ -92,5 +94,6 @@ async fn download_image(url: &str, redis_client: &mut Client) -> Result<axum::bo
 }
 
 fn redis_key(url: &str) -> String {
-    format!("imaginary:cache:{}", url)
+    let prefix = env::var("REDIS_PREFIX").unwrap_or_else(|_| "imaginary".to_string());
+    format!("{}:cache:{}", prefix, url)
 }
