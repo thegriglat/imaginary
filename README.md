@@ -8,18 +8,24 @@ In common image convert adds 70-200ms to request processing time.
 
 ## Query parameters
 
-| **Variable**     | **Allowed values**                       | **Description**                                                                                  |
-| :--------------- | :--------------------------------------- | :----------------------------------------------------------------------------------------------- |
-| `url` (required) | valid url                                | Image url to be processed                                                                        |
-| `flip_x`         | `true` or `false`                        | Flip image horizontally                                                                          |
-| `flip_y`         | `true` or `false`                        | Flip image vertically                                                                            |
-| `grayscale`      | `true` or `false`                        | Make image grayscale                                                                             |
-| `blur`           | floating number > 0                      | Blur image                                                                                       |
-| `crop`           | `x,y,width,height`                       | Crop image, *x*, *y* are coordinates of top left crop edge                                       |
-| `rotate`         | `90` or `180`or `270`                    | Rotate image                                                                                     |
-| `format`         | `png`, `webp`, `avif` or `jpeg`/`jpeg:n` | Convert image to desired format. Configure JPEG quality with *n*, default is *JPEG (quality 95)* |
+| **Variable**     | **Allowed values**                                                                   | **Description**                                                                                  |
+| :--------------- | :----------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| `url` (required) | valid url                                                                            | Image url to be processed                                                                        |
+| `flip_x`         | `true` or `false`                                                                    | Flip image horizontally                                                                          |
+| `flip_y`         | `true` or `false`                                                                    | Flip image vertically                                                                            |
+| `grayscale`      | `true` or `false`                                                                    | Make image grayscale                                                                             |
+| `blur`           | floating number > 0                                                                  | Blur image                                                                                       |
+| `crop`           | `x,y,width,height`                                                                   | Crop image, *x*, *y* are coordinates of top left crop edge                                       |
+| `rotate`         | `90` or `180`or `270`                                                                | Rotate image                                                                                     |
+| `scale`          | string in format `<width>x<height>[:<algorithm>]`, e.g. `150x100` or `150x100:cubic` | Scale image preserving aspect ratio                                                              |
+| `format`         | `png`, `webp`, `avif` or `jpeg`/`jpeg:n`                                             | Convert image to desired format. Configure JPEG quality with *n*, default is *JPEG (quality 95)* |
 
-
+### Supported algorithms for scaling
+ * `nearest` - Nearest neighbor interpolation
+ * `triangle` - Triangle interpolation
+ * `cubic` - Catmull-Rom interpolation (Cubic interpolation)
+ * `gaussian` - Gaussian interpolation
+ * `lanczos3` - Lanczos3 interpolation
 ## Deployment
 
 Run redis

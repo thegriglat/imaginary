@@ -1,12 +1,19 @@
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub enum Format {
     Jpeg(u8),
     Png,
     WebP,
     Avif,
+}
+
+#[derive(Clone, Debug)]
+pub struct Scale {
+    pub width: u32,
+    pub height: u32,
+    pub algorithm: image::imageops::FilterType,
 }
 
 impl<'de> Deserialize<'de> for Format {
@@ -46,7 +53,46 @@ impl<'de> Deserialize<'de> for Format {
     }
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+impl<'de> Deserialize<'de> for Scale {
+    fn deserialize<D>(deserializer: D) -> Result<Scale, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        let str = s.as_str();
+
+        let mut x = str.split(":");
+        let size: Vec<u32> = x
+            .next()
+            .unwrap()
+            .split("x")
+            .map(|x| x.parse::<u32>().unwrap())
+            .collect();
+
+        if size.len() != 2 {
+            return Err(serde::de::Error::custom("expected width x height as scale"));
+        }
+
+        let algorithm = x.next().unwrap_or("nearest");
+
+        let algorithm = match algorithm {
+            "nearest" => image::imageops::FilterType::Nearest,
+            "triangle" => image::imageops::FilterType::Triangle,
+            "cubic" => image::imageops::FilterType::CatmullRom,
+            "gaussian" => image::imageops::FilterType::Gaussian,
+            "lanczos3" => image::imageops::FilterType::Lanczos3,
+            _ => image::imageops::FilterType::Nearest,
+        };
+
+        Ok(Scale {
+            width: size[0],
+            height: size[1],
+            algorithm,
+        })
+    }
+}
+
+#[derive(Deserialize, Clone, Debug)]
 pub struct QueryParams {
     pub url: String,
     pub flip_x: Option<bool>,
@@ -56,4 +102,5 @@ pub struct QueryParams {
     pub crop: Option<String>,
     pub rotate: Option<u32>,
     pub format: Option<Format>,
+    pub scale: Option<Scale>,
 }

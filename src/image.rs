@@ -1,4 +1,4 @@
-use crate::query::{Format, QueryParams};
+use crate::query::{Format, QueryParams, Scale};
 use axum::body::Bytes;
 use std::io::Cursor;
 
@@ -32,6 +32,15 @@ impl Converter {
     fn blur(&mut self, blur: Option<f32>) -> &mut Self {
         if let Some(value) = blur {
             self.image = self.image.blur(value);
+        }
+        self
+    }
+
+    fn scale(&mut self, scale: Option<Scale>) -> &mut Self {
+        if let Some(value) = scale {
+            self.image = self
+                .image
+                .resize(value.width, value.height, value.algorithm);
         }
         self
     }
@@ -123,7 +132,8 @@ impl Converter {
 
     pub fn result(&mut self) -> Result<Bytes, String> {
         let params = self.params.clone();
-        self.crop(params.crop)
+        self.scale(params.scale)
+            .crop(params.crop)
             .flip_x(params.flip_x)
             .flip_y(params.flip_y)
             .rotate(params.rotate)
