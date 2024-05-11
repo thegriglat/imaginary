@@ -92,5 +92,5 @@ async fn download_image(url: &str, redis_client: &mut Client) -> Result<axum::bo
 }
 
 fn redis_key(url: &str) -> String {
-    format!("image:{}", url)
+    format!("imaginary:cache:{}", url)
 }
