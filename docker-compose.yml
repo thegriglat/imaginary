@@ -1,0 +1,27 @@
+services:
+  imaginary:
+    image: thegriglat/imaginary
+    build: 
+      context: .
+      target: imaginary
+    environment:
+      - PORT=8080
+      - REDIS_URL=redis://redis:6379
+      - REDIS_PREFIX=imaginary
+    ports:
+      - "8080:8080"
+    networks:
+      - imaginary
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    networks:
+      - imaginary
+
+volumes:
+  redis-data:
+
+networks:
+  imaginary:
