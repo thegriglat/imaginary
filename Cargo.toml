@@ -23,6 +23,8 @@ axum = { version = "0.6.20", features = ["headers"] }
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 tracing = "0.1.40"
+redis = { version = "0.25.3", features = ["tokio", "tokio-comp"] }
+anyhow = "1.0.83"
 
 [profile.release]
 opt-level = 3

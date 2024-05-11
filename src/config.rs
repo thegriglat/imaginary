@@ -4,14 +4,16 @@ use std::env;
 #[derive(Debug)]
 pub struct Config {
     pub port: u16,
+    pub redis_url: String,
 }
 
 impl Config {
     pub fn read() -> Self {
         dotenv().ok();
         let port = Config::port();
+        let redis_url = Config::get_env_var("REDIS_URL").expect("REDIS_URL is not set");
 
-        let config = Config { port };
+        let config = Config { port, redis_url };
         config.dump();
         config
     }

@@ -4,7 +4,7 @@ RUN apk add rust cargo --no-cache
 
 FROM rust-build as app-build
 WORKDIR /app
-RUN apk add --no-cache openssl-dev libgcc
+RUN apk add --no-cache openssl-dev libgcc nasm
 COPY . .
 RUN cargo build --release
 

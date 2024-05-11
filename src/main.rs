@@ -16,7 +16,11 @@ async fn main() {
         .with_max_level(tracing::Level::DEBUG)
         .init();
 
-    let router = Router::new().route("/", get(api::handle_image));
+    let redis = redis::Client::open(config.redis_url).unwrap();
+
+    let router = Router::new()
+        .route("/", get(api::handle_image))
+        .with_state(redis);
 
     let addr: SocketAddr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, config.port));
 
