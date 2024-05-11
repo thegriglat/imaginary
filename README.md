@@ -52,10 +52,11 @@ make build
 ## Environment variables
 
 | **Variable**   | **Default** | **Description**                      |
-| :------------- | :---------- | :----------------------------------- |
-| `PORT`         | 8080        | Which port Imaginary will listen     |
-| `REDIS_URL`    | -           | Address of redis instance to connect |
-| `REDIS_PREFIX` | imaginary   | redis prefix for imaginary entries   |
+| :------------- | :---------: | :----------------------------------- |
+| `PORT`         |    8080     | Which port Imaginary will listen     |
+| `REDIS_URL`    |      -      | Address of redis instance to connect |
+| `REDIS_PREFIX` |  imaginary  | redis prefix for imaginary entries   |
+| `REDIS_TTL`    |     60      | TTL in seconds for redis cache       |
 
 
 ## Local development

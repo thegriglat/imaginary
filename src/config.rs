@@ -1,10 +1,12 @@
 use dotenv::dotenv;
-use std::env;
+use std::{env, sync::Arc};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Config {
     pub port: u16,
-    pub redis_url: String,
+    pub redis_url: Arc<String>,
+    pub redis_prefix: Arc<String>,
+    pub redis_ttl: usize,
 }
 
 impl Config {
@@ -12,8 +14,18 @@ impl Config {
         dotenv().ok();
         let port = Config::port();
         let redis_url = Config::get_env_var("REDIS_URL").expect("REDIS_URL is not set");
+        let redis_prefix = Config::get_env_var("REDIS_PREFIX").unwrap_or("imaginary".to_string());
+        let redis_ttl = Config::get_env_var("REDIS_TTL")
+            .unwrap_or("60".to_string())
+            .parse::<usize>()
+            .unwrap_or(60);
 
-        let config = Config { port, redis_url };
+        let config = Config {
+            port,
+            redis_url: Arc::new(redis_url),
+            redis_prefix: Arc::new(redis_prefix),
+            redis_ttl,
+        };
         config.dump();
         config
     }

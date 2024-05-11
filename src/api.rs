@@ -1,5 +1,3 @@
-use std::env;
-
 use anyhow::Result;
 use axum::{
     body::Bytes,
@@ -12,6 +10,7 @@ use redis::{Client, Commands, RedisResult, SetOptions};
 use reqwest::StatusCode;
 
 use crate::{
+    app_state::AppState,
     image::{guess_mime_type, Converter},
     query::{Format, QueryParams},
     request,
@@ -19,10 +18,10 @@ use crate::{
 
 pub async fn handle_image(
     query: Query<QueryParams>,
-    State(redis_client): State<Client>,
+    State(state): State<AppState>,
 ) -> impl IntoResponse {
     // check cache
-    let image = get_image_bytes(&query.url, &mut redis_client.clone()).await;
+    let image = get_image_bytes(&query.url, &mut state.clone()).await;
     let query_params = query.0;
     let image_bytes = match image {
         Ok(bytes) => bytes,
@@ -73,8 +72,8 @@ fn get_image_from_redis(key: &str, redis_client: &mut Client) -> Option<Bytes> {
     }
 }
 
-fn set_image_in_redis(key: &str, image: &Bytes, redis_client: &mut Client) {
-    let expiration_in_seconds = redis::SetExpiry::EX(60); // 60 seconds
+fn set_image_in_redis(key: &str, image: &Bytes, redis_client: &mut Client, ttl: usize) {
+    let expiration_in_seconds = redis::SetExpiry::EX(ttl);
     let options = SetOptions::default().with_expiration(expiration_in_seconds);
     let _: RedisResult<Bytes> = redis_client.set_options(key, image.as_bytes(), options);
 }
@@ -85,20 +84,20 @@ async fn download_image(url: &str) -> Result<Bytes> {
         .map_err(|error| anyhow::anyhow!("Failed to download image: {}", error))
 }
 
-async fn get_image_bytes(url: &str, redis_client: &mut Client) -> Result<Bytes> {
-    let key = redis_key(url);
-    let cached_image = get_image_from_redis(&key, redis_client);
+async fn get_image_bytes(url: &str, state: &mut AppState) -> Result<Bytes> {
+    let key = redis_key(url, state.config.redis_prefix.as_str());
+    let cached_image = get_image_from_redis(&key, &mut state.redis_client);
     match cached_image {
         Some(image) => Ok(image),
         None => {
             let image = download_image(url).await?;
-            set_image_in_redis(&key, &image, redis_client);
+            let ttl = state.config.redis_ttl;
+            set_image_in_redis(&key, &image, &mut state.redis_client, ttl);
             Ok(image)
         }
     }
 }
 
-fn redis_key(url: &str) -> String {
-    let prefix = env::var("REDIS_PREFIX").unwrap_or_else(|_| "imaginary".to_string());
+fn redis_key(url: &str, prefix: &str) -> String {
     format!("{}:cache:{}", prefix, url)
 }

@@ -4,6 +4,7 @@ use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 mod config;
 use config::Config;
 mod api;
+mod app_state;
 mod image;
 mod query;
 mod request;
@@ -16,11 +17,16 @@ async fn main() {
         .with_max_level(tracing::Level::DEBUG)
         .init();
 
-    let redis = redis::Client::open(config.redis_url).unwrap();
+    let redis = redis::Client::open(config.redis_url.as_str()).unwrap();
+
+    let app_state = app_state::AppState {
+        redis_client: redis,
+        config: config.clone(),
+    };
 
     let router = Router::new()
         .route("/", get(api::handle_image))
-        .with_state(redis);
+        .with_state(app_state);
 
     let addr: SocketAddr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, config.port));
 
