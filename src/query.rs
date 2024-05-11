@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 pub enum Format {
     Jpeg(u8),
     Png,
+    WebP,
+    Avif,
 }
 
 impl<'de> Deserialize<'de> for Format {
@@ -14,12 +16,21 @@ impl<'de> Deserialize<'de> for Format {
     {
         let s = String::deserialize(deserializer)?;
         let str = s.as_str();
+
         if str == "png" {
             return Ok(Format::Png);
         }
 
         if str == "jpeg" {
             return Ok(Format::Jpeg(95));
+        }
+
+        if str == "webp" {
+            return Ok(Format::WebP);
+        }
+
+        if str == "avif" {
+            return Ok(Format::Avif);
         }
 
         let regex = Regex::new(r"jpeg:(\d+)").unwrap();

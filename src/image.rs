@@ -92,6 +92,20 @@ impl Converter {
                         .is_ok()
                     {}
                 }
+                Format::WebP => {
+                    if self
+                        .image
+                        .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::WebP)
+                        .is_ok()
+                    {}
+                }
+                Format::Avif => {
+                    if self
+                        .image
+                        .write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Avif)
+                        .is_ok()
+                    {}
+                }
             },
             _ => {
                 if self
