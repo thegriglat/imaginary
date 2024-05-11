@@ -22,7 +22,7 @@ pub async fn handle_image(
     State(redis_client): State<Client>,
 ) -> impl IntoResponse {
     // check cache
-    let image = download_image(&query.url, &mut redis_client.clone()).await;
+    let image = get_image_bytes(&query.url, &mut redis_client.clone()).await;
     let query_params = query.0;
     let image_bytes = match image {
         Ok(bytes) => bytes,
@@ -65,32 +65,37 @@ pub async fn handle_image(
     (headers, converted_image).into_response()
 }
 
-async fn download_image(url: &str, redis_client: &mut Client) -> Result<axum::body::Bytes> {
+fn get_image_from_redis(key: &str, redis_client: &mut Client) -> Option<Bytes> {
+    let cached_image: redis::RedisResult<Bytes> = redis_client.get(key);
+    match cached_image {
+        Ok(image) => Some(image),
+        Err(_) => None,
+    }
+}
+
+fn set_image_in_redis(key: &str, image: &Bytes, redis_client: &mut Client) {
+    let expiration_in_seconds = redis::SetExpiry::EX(60); // 60 seconds
+    let options = SetOptions::default().with_expiration(expiration_in_seconds);
+    let _: RedisResult<Bytes> = redis_client.set_options(key, image.as_bytes(), options);
+}
+
+async fn download_image(url: &str) -> Result<Bytes> {
+    request::request(url)
+        .await
+        .map_err(|error| anyhow::anyhow!("Failed to download image: {}", error))
+}
+
+async fn get_image_bytes(url: &str, redis_client: &mut Client) -> Result<Bytes> {
     let key = redis_key(url);
-    let cached_image: redis::RedisResult<axum::body::Bytes> = redis_client.get(key.clone());
-    let image: Result<axum::body::Bytes> = match cached_image {
-        Ok(image) => Ok(image),
-        Err(err) => {
-            println!("{}", err);
-            let image = request::request(url).await;
-            match image {
-                Ok(img) => {
-                    let expiration_in_seconds = redis::SetExpiry::EX(60); // 60 seconds
-                    let options = SetOptions::default().with_expiration(expiration_in_seconds);
-                    let _res: RedisResult<Bytes> =
-                        redis_client.set_options(key, img.as_bytes(), options);
-
-                    Ok(img)
-                }
-                Err(err) => {
-                    println!("Failed to download image: {}", err);
-                    Err(anyhow::Error::from(err))
-                }
-            }
+    let cached_image = get_image_from_redis(&key, redis_client);
+    match cached_image {
+        Some(image) => Ok(image),
+        None => {
+            let image = download_image(url).await?;
+            set_image_in_redis(&key, &image, redis_client);
+            Ok(image)
         }
-    };
-
-    image.map_err(|error| anyhow::anyhow!("Failed to download image: {}", error))
+    }
 }
 
 fn redis_key(url: &str) -> String {
