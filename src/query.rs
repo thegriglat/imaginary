@@ -48,7 +48,7 @@ impl<'de> Deserialize<'de> for Format {
         }
 
         Err(serde::de::Error::custom(
-            "expected png or jpeg:<quality> as format",
+            "expected png, webp, avif, jpeg, jpeg:<quality> as format parameter",
         ))
     }
 }
