@@ -19,16 +19,17 @@ async fn main() {
 
     let redis = redis::Client::open(config.redis_url.as_str()).unwrap();
 
+    let app_port = config.port;
     let app_state = app_state::AppState {
         redis_client: redis,
-        config: config.clone(),
+        config,
     };
 
     let router = Router::new()
         .route("/", get(api::handle_image))
         .with_state(app_state);
 
-    let addr: SocketAddr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, config.port));
+    let addr: SocketAddr = SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, app_port));
 
     axum::Server::bind(&addr)
         .serve(router.into_make_service())

@@ -1,11 +1,11 @@
 use dotenv::dotenv;
-use std::{env, sync::Arc};
+use std::env;
 
 #[derive(Debug, Clone)]
 pub struct Config {
     pub port: u16,
-    pub redis_url: Arc<String>,
-    pub redis_prefix: Arc<String>,
+    pub redis_url: String,
+    pub redis_prefix: String,
     pub redis_ttl: usize,
 }
 
@@ -22,8 +22,8 @@ impl Config {
 
         let config = Config {
             port,
-            redis_url: Arc::new(redis_url),
-            redis_prefix: Arc::new(redis_prefix),
+            redis_url,
+            redis_prefix,
             redis_ttl,
         };
         config.dump();
